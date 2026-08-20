@@ -102,12 +102,20 @@ export async function searchPlaces(query: string): Promise<Place[]> {
   );
   if (!res.ok) return [];
   const json = await res.json();
-  return (json.results ?? []).map((r: Record<string, unknown>) => ({
+  type GeoResult = {
+    id: number;
+    name: string;
+    admin1?: string;
+    country?: string;
+    latitude: number;
+    longitude: number;
+  };
+  return ((json.results ?? []) as GeoResult[]).map((r) => ({
     id: String(r.id),
-    name: String(r.name),
+    name: r.name,
     region: [r.admin1, r.country].filter(Boolean).join(", "),
-    latitude: Number(r.latitude),
-    longitude: Number(r.longitude),
+    latitude: r.latitude,
+    longitude: r.longitude,
   }));
 }
 
