@@ -142,3 +142,153 @@
     color: var(--color-foreground);
   }
 }
+
+/* ---------------------------------------------------------------
+ * Automatic time-of-day sky
+ * Four gradient layers are always mounted and cross-faded, so the
+ * background moves smoothly between morning/afternoon/evening/night.
+ * --------------------------------------------------------------- */
+
+.sky-layer {
+  position: absolute;
+  inset: 0;
+  transition: opacity 2000ms ease-in-out;
+  will-change: opacity;
+}
+
+.sky-layer[data-phase="morning"] {
+  background:
+    radial-gradient(120% 80% at 20% 105%, oklch(0.93 0.11 75 / 0.85), transparent 65%),
+    linear-gradient(
+      to bottom,
+      oklch(0.86 0.07 240) 0%,
+      oklch(0.92 0.06 60) 45%,
+      oklch(0.95 0.09 45) 78%,
+      oklch(0.9 0.1 30) 100%
+    );
+}
+
+.sky-layer[data-phase="afternoon"] {
+  background:
+    radial-gradient(90% 60% at 78% -5%, oklch(0.97 0.07 95 / 0.8), transparent 60%),
+    linear-gradient(
+      to bottom,
+      oklch(0.68 0.14 245) 0%,
+      oklch(0.79 0.1 235) 48%,
+      oklch(0.92 0.05 225) 100%
+    );
+}
+
+.sky-layer[data-phase="evening"] {
+  background:
+    radial-gradient(110% 70% at 82% 100%, oklch(0.78 0.17 45 / 0.9), transparent 62%),
+    linear-gradient(
+      to bottom,
+      oklch(0.36 0.11 285) 0%,
+      oklch(0.55 0.15 15) 42%,
+      oklch(0.74 0.17 45) 74%,
+      oklch(0.83 0.15 70) 100%
+    );
+}
+
+.sky-layer[data-phase="night"] {
+  background:
+    radial-gradient(90% 60% at 50% 105%, oklch(0.32 0.07 265 / 0.9), transparent 70%),
+    linear-gradient(
+      to bottom,
+      oklch(0.14 0.05 270) 0%,
+      oklch(0.19 0.06 265) 55%,
+      oklch(0.26 0.06 258) 100%
+    );
+}
+
+/* Softens the sky so cards and text always stay readable */
+.sky-veil {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    color-mix(in oklch, var(--background) 12%, transparent),
+    color-mix(in oklch, var(--background) 42%, transparent)
+  );
+}
+
+.sun-orb,
+.moon-orb {
+  position: absolute;
+  border-radius: 9999px;
+  transition:
+    opacity 2000ms ease-in-out,
+    transform 2000ms ease-in-out;
+}
+
+.sun-orb {
+  top: 6%;
+  right: 12%;
+  height: 7rem;
+  width: 7rem;
+  background: radial-gradient(circle, oklch(0.99 0.09 95) 35%, oklch(0.92 0.14 80 / 0.35) 70%, transparent 72%);
+  box-shadow: 0 0 8rem 3rem oklch(0.95 0.12 85 / 0.35);
+  animation: orb-float 12s ease-in-out infinite;
+}
+
+.moon-orb {
+  top: 8%;
+  right: 16%;
+  height: 5rem;
+  width: 5rem;
+  background: radial-gradient(circle at 35% 35%, oklch(0.98 0.02 250) 45%, oklch(0.82 0.03 255 / 0.5) 68%, transparent 72%);
+  box-shadow: 0 0 6rem 2rem oklch(0.9 0.03 255 / 0.25);
+  animation: orb-float 16s ease-in-out infinite;
+}
+
+.star-field {
+  position: absolute;
+  inset: 0;
+  transition: opacity 2000ms ease-in-out;
+  background-image:
+    radial-gradient(1.6px 1.6px at 12% 18%, white, transparent),
+    radial-gradient(1.4px 1.4px at 28% 42%, white, transparent),
+    radial-gradient(1.8px 1.8px at 44% 12%, white, transparent),
+    radial-gradient(1.2px 1.2px at 62% 30%, white, transparent),
+    radial-gradient(1.6px 1.6px at 74% 8%, white, transparent),
+    radial-gradient(1.3px 1.3px at 88% 26%, white, transparent),
+    radial-gradient(1.5px 1.5px at 18% 62%, white, transparent),
+    radial-gradient(1.2px 1.2px at 52% 56%, white, transparent),
+    radial-gradient(1.4px 1.4px at 82% 50%, white, transparent);
+  animation: twinkle 5s ease-in-out infinite alternate;
+}
+
+@keyframes orb-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(1.25rem);
+  }
+}
+
+@keyframes twinkle {
+  from {
+    opacity: 0.55;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sun-orb,
+  .moon-orb,
+  .star-field {
+    animation: none;
+  }
+}
+
+@utility glass-panel {
+  background-color: color-mix(in oklch, var(--card) 72%, transparent);
+  backdrop-filter: blur(20px) saturate(140%);
+  border: 1px solid color-mix(in oklch, var(--border) 80%, transparent);
+  box-shadow: 0 18px 45px -25px oklch(0.2 0.05 260 / 0.45);
+}
